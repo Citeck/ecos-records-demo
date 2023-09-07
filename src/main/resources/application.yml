@@ -1,0 +1,9 @@
+---
+spring:
+  application:
+    name: records-demo
+  banner:
+    location: classpath:/banner.txt
+
+server:
+  port: 12345

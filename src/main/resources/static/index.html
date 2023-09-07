@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+        <title>ECOS Records API Demo</title>
+        <style>
+            body {
+                max-width: 1000px;
+                _width: 500px;
+                padding: 30px 20px 50px;
+                border: 1px solid #b3b3b3;
+                border-radius: 4px;
+                margin: 0 auto;
+                box-shadow: 0 1px 10px #a7a7a7, inset 0 1px 0 #fff;
+                background: #fcfcfc;
+            }
+            button {
+                height: 30px;
+            }
+            textarea {
+                width: 100%;
+                min-height: 100px;
+            }
+            .container {
+                max-width: 800px;
+                _width: 380px;
+                margin: 0 auto;
+                flex-direction: column;
+            }
+            .test-block {
+                margin-bottom: 30px;
+            }
+        </style>
+
+        <script>
+            async function queryAll() {
+                let response = await fetch('/records/query', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        query: {
+                            sourceId: "records-demo/test-dao",
+                            language: 'predicate',
+                            query: {},
+                            page: { maxItems: 100, skipCount: 0 }
+                        },
+                        attributes: {
+                            "alias0": "field0"
+                        }
+                    })
+                }).then(r => r.json());
+                document.getElementById("query-test-resp").textContent = JSON.stringify(response, null, 2)
+            }
+
+            async function queryById() {
+                let queryByIdInput = document.getElementById("query-by-id-input");
+                let response = await fetch('/records/query', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        records: [
+                            queryByIdInput.value
+                        ],
+                        attributes: {
+                            "alias0": "field0"
+                        }
+                    })
+                }).then(r => r.json());
+                document.getElementById("query-by-id-resp").textContent = JSON.stringify(response, null, 2)
+            }
+
+            async function mutate() {
+                let idInput = document.getElementById("mutate_id");
+                let field0Input = document.getElementById("mutate_field0");
+                let intFieldInput = document.getElementById("mutate_intField");
+
+                let response = await fetch('/records/mutate', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        records: [
+                            {
+                                "id": idInput.value,
+                                "attributes": {
+                                    "field0": field0Input.value,
+                                    "intField": intFieldInput.value
+                                }
+                            }
+                        ]
+                    })
+                }).then(r => r.json());
+                document.getElementById("mutate-test-resp").textContent = JSON.stringify(response, null, 2)
+            }
+
+            async function deleteQuery() {
+
+                let deleteIdInput = document.getElementById("delete_id");
+
+                let response = await fetch('/records/delete', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        records: [
+                            deleteIdInput.value
+                        ]
+                    })
+                }).then(r => r.json());
+                document.getElementById("delete-test-resp").textContent = JSON.stringify(response, null, 2)
+            }
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Welcome, ECOS Records API Demo!</h1>
+            <div class="test-block">
+                <button onclick="queryAll()">Query All</button>
+                <textarea id="query-test-resp"></textarea>
+            </div>
+            <div class="test-block">
+                <div>
+                    <label for="query-by-id-input">Id:</label> <input id="query-by-id-input">
+                </div>
+                <button onclick="queryById()">Query By Id</button>
+                <textarea id="query-by-id-resp"></textarea>
+            </div>
+            <div class="test-block">
+                <div>
+                    <label for="mutate_id">Id:</label> <input id="mutate_id">
+                    <label for="mutate_field0">field0:</label> <input id="mutate_field0">
+                    <label for="mutate_intField">intField:</label> <input id="mutate_intField" type="number">
+                </div>
+                <button onclick="mutate()">Mutate</button>
+                <textarea id="mutate-test-resp"></textarea>
+            </div>
+            <div class="test-block">
+                <div>
+                    <label for="delete_id">Id:</label> <input id="delete_id">
+                </div>
+                <button onclick="deleteQuery()">Delete</button>
+                <textarea id="delete-test-resp"></textarea>
+            </div>
+        </div>
+    </body>
+</html>
